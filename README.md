@@ -162,3 +162,27 @@ The Hub VNet peerings with both the Dev and Prod spoke VNets were verified in th
 
 ![VNet Peering Validation](screenshots/vnet-peering-validation.png)
 
+### Route Validation
+
+The route table associated with the Dev workload subnet was verified to ensure that traffic destined for the Prod Spoke is routed through Azure Firewall.
+
+| Configuration | Value |
+|---|---|
+| Source Subnet | Dev Workload (`10.1.1.0/24`) |
+| Destination Prefix | Prod Spoke (`10.2.0.0/16`) |
+| Next Hop Type | `Virtual Appliance` |
+| Next Hop IP | Azure Firewall (`10.0.1.4`) |
+
+![Dev Route Table Validation](screenshots/dev-route-table-validation.png)
+
+### Firewall Policy Validation
+
+The Azure Firewall Policy was verified to ensure that inter-spoke traffic is explicitly controlled by firewall network rules.
+
+The network rule collection allows ICMP traffic in both directions:
+
+- Dev Spoke (`10.1.0.0/16`) → Prod Spoke (`10.2.0.0/16`)
+- Prod Spoke (`10.2.0.0/16`) → Dev Spoke (`10.1.0.0/16`)
+
+![Firewall Policy Validation](screenshots/firewall-policy-validation.png)
+
