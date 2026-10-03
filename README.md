@@ -22,6 +22,10 @@ The architecture consists of:
 ---
 ### High-Level Design
 
+The following diagram shows the Hub-and-Spoke network architecture, where the Hub provides centralized connectivity and Azure Firewall controls traffic between the Dev and Prod spokes.
+
+![Azure Hub-and-Spoke Architecture](screenshots/hub-spoke-architecture.png)
+
 ---
 
 ## Key Implementation Highlights
