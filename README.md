@@ -23,6 +23,18 @@ The architecture consists of:
 ### High-Level Design
 
 ---
+
+## Key Implementation Highlights
+
+- Implemented a **Hub-and-Spoke network architecture** using reusable Terraform modules.
+- Deployed **Azure Firewall** in the Hub VNet for centralized traffic control.
+- Configured **Azure Firewall Policy** with network rules to control communication between Dev and Prod spokes.
+- Configured **VNet Peering** between the Hub and both Spoke VNets with forwarded traffic enabled.
+- Used **User Defined Routes (UDRs)** to route inter-spoke traffic through Azure Firewall as a virtual appliance.
+- Maintained **network isolation** by avoiding direct peering between the Dev and Prod spokes.
+- Applied **Network Security Groups (NSGs)** to the workload subnets for additional traffic filtering.
+- Validated end-to-end private connectivity between the Dev and Prod VMs through Azure Firewall.
+---
 ## Network Design
 
 The network is divided into one Hub VNet and two Spoke VNets with non-overlapping address spaces.
