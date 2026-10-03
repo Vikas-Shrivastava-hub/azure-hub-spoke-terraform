@@ -161,3 +161,4 @@ The Hub VNet peerings with both the Dev and Prod spoke VNets were verified in th
 - No direct peering exists between the Dev and Prod spokes.
 
 ![VNet Peering Validation](screenshots/vnet-peering-validation.png)
+
