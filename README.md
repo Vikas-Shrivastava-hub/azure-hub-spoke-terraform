@@ -186,3 +186,33 @@ The network rule collection allows ICMP traffic in both directions:
 
 ![Firewall Policy Validation](screenshots/firewall-policy-validation.png)
 
+### Connectivity Validation
+
+Inter-spoke connectivity was tested using the private IP addresses of the Dev and Prod VMs to verify end-to-end communication through the centralized Azure Firewall.
+
+#### Dev to Prod
+
+Traffic from the Dev VM (`10.1.1.4`) to the Prod VM (`10.2.1.4`) was tested using ICMP.
+
+```bash
+ping -c 4 10.2.1.4
+```
+
+**Result:** Successful — 4 packets transmitted, 4 received, 0% packet loss.
+
+![Dev to Prod Connectivity](screenshots/dev-to-prod-connectivity.png)
+
+#### Prod to Dev
+
+Reverse connectivity from the Prod VM (`10.2.1.4`) to the Dev VM (`10.1.1.4`) was also tested.
+
+```bash
+ping -c 4 10.1.1.4
+```
+
+**Result:** Successful — 4 packets transmitted, 4 received, 0% packet loss.
+
+![Prod to Dev Connectivity](screenshots/prod-to-dev-connectivity.png)
+
+The successful connectivity tests confirm that inter-spoke traffic is routed through the Hub using the configured UDRs and is permitted by the Azure Firewall Policy.
+
