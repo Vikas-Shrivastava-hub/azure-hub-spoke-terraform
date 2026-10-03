@@ -148,3 +148,16 @@ After completing the validation and testing, destroy the infrastructure to avoid
 ```bash
 terraform destroy
 ```
+## Validation and Testing
+
+After deploying the infrastructure, the network configuration and inter-spoke connectivity were validated to ensure that traffic was correctly routed through the centralized Azure Firewall.
+
+### VNet Peering Validation
+
+The Hub VNet peerings with both the Dev and Prod spoke VNets were verified in the `Connected` state.
+
+- Hub ↔ Dev Spoke
+- Hub ↔ Prod Spoke
+- No direct peering exists between the Dev and Prod spokes.
+
+![VNet Peering Validation](screenshots/vnet-peering-validation.png)
