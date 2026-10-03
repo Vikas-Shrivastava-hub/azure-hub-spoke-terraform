@@ -1,0 +1,153 @@
+trigger: none
+
+pr:
+ branches:
+   include:
+     - main
+
+pool: devops-pool
+
+variables:
+  # - group: mono-shared-secret
+  - name: dir
+    value: $(System.DefaultWorkingDirectory)/environments
+
+stages:
+- stage: setup
+  displayName: Terraform Setup
+  dependsOn: []
+  jobs:
+  - job: install
+    displayName: Terraform Install
+    steps:
+    - task: TerraformInstaller@1
+      inputs:
+        terraformVersion: 'latest'
+
+- stage: validation
+  displayName: Validation
+  jobs:
+    - job: formatting
+      displayName: Terrafrom Fmt
+      steps:
+      - task: PowerShell@2
+        inputs:
+          targetType: 'inline'
+          script: 'terraform fmt -check -recursive'
+          workingDirectory: '$(dir)/dev'
+        displayName: Fmt
+    
+    - job: Validation
+      displayName: Terraform Validate
+      steps:
+      - task: TerraformTask@5
+        inputs:
+          provider: 'azurerm'
+          command: 'init'
+          workingDirectory: '$(dir)/dev'
+          commandOptions: '-backend=false'
+          backendServiceArm: 'Az-service-connection'
+          backendAzureRmStorageAccountName: 'strmono'
+          backendAzureRmContainerName: 'statefile'
+          backendAzureRmKey: 'hub-spoke/dev.statefile'
+        displayName: Terraform Init
+      - task: TerraformTask@5
+        inputs:
+          provider: 'azurerm'
+          command: 'validate'
+          workingDirectory: '$(dir)/dev'
+        displayName: Terraform Validate
+      
+- stage: TerraformLint
+  displayName: Terraform Lint
+  dependsOn: validation
+  jobs:
+    - job: lint
+      displayName: tflint
+      steps:
+      - task: TerraformTask@5
+        inputs:
+          provider: 'azurerm'
+          command: 'init'
+          workingDirectory: '$(dir)/dev'
+          commandOptions: '-backend=false'
+          backendServiceArm: 'Az-service-connection'
+          backendAzureRmStorageAccountName: 'strmono'
+          backendAzureRmContainerName: 'statefile'
+          backendAzureRmKey: 'hub-spoke/dev.statefile'
+        displayName: terraform Init
+      - task: PowerShell@2
+        inputs:
+          targetType: 'inline'
+          script: |
+            Invoke-WebRequest -Uri https://github.com/terraform-linters/tflint/releases/latest/download/tflint_windows_amd64.zip -OutFile tflint.zip
+            Expand-Archive tflint.zip -DestinationPath tflint
+            $env:Path += ";$(System.DefaultWorkingDirectory)/tflint"
+            tflint --version
+          workingDirectory: '$(dir)/dev'
+        displayName: tflint Install
+    - job: tflint
+      displayName: Run Tflint
+      dependsOn: lint
+      steps:
+      - task: TerraformTask@5
+        inputs:
+          provider: 'azurerm'
+          command: 'init'
+          workingDirectory: '$(dir)/dev'
+          commandOptions: '-backend=false'
+          backendServiceArm: 'Az-service-connection'
+          backendAzureRmStorageAccountName: 'strmono'
+          backendAzureRmContainerName: 'statefile'
+          backendAzureRmKey: 'hub-spoke/dev.statefile'
+        displayName: Terraform init
+      - task: PowerShell@2
+        inputs:
+          targetType: 'inline'
+          script: |
+            tflint  --init
+            tflint  --chdir .
+          workingDirectory: '$(dir)/dev'
+        displayName: Run Tflint
+
+- stage: SecurityScan
+  displayName: Security Scan(Trivy)
+  dependsOn: validation
+  jobs:
+    - job: install
+      displayName: Trivy Install
+      steps:
+      - task: PowerShell@2
+        inputs:
+          targetType: 'inline'
+          script: |
+            Invoke-WebRequest -Uri https://github.com/aquasecurity/trivy/releases/latest/download/trivy_0.75.0_windows-64bit.zip -OutFile trivy.zip
+            Expand-Archive trivy.zip -DestinationPath trivy
+            $env:Path += ";$(System.DefaultWorkingDirectory)/trivy"
+            trivy --version
+          workingDirectory: '$(dir)/dev'
+
+    - job: secrity
+      displayName: Trivy
+      steps:
+      - task: TerraformTask@5
+        inputs:
+          provider: 'azurerm'
+          command: 'init'
+          workingDirectory: '$(dir)/dev'
+          commandOptions: '-backend=false'
+          backendServiceArm: 'Az-service-connection'
+          backendAzureRmStorageAccountName: 'strmono'
+          backendAzureRmContainerName: 'statefile'
+          backendAzureRmKey: 'hub-spoke/dev.statefile'
+        displayName: Terraform init
+      - task: PowerShell@2
+        inputs:
+          targetType: 'inline'
+          script: 'trivy config --tf-vars terraform.tfvars .'
+          workingDirectory: '$(dir)/dev'
+        displayName: Run Trivy
+       
+
+
+
