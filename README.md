@@ -63,3 +63,88 @@ Inter-spoke traffic is forced through the centralized Azure Firewall using User 
 - **Destination Prefix:** Dev Spoke (`10.1.0.0/16`)
 - **Next Hop Type:** `Virtual Appliance`
 - **Next Hop:** `Azure Firewall private IP`
+---
+
+## Terraform Project Structure
+
+The Terraform configuration follows a modular structure, with reusable modules separated from environment-specific configuration.
+
+```text
+azure-hub-spoke-terraform/
+│
+├── environments/
+│   └── dev/
+│       ├── main.tf
+│       ├── provider.tf
+│       ├── terraform.tfvars
+│       └── variable.tf
+│    
+│
+├── modules/
+│   ├── firewall/
+│   ├── firewall_policy/
+│   ├── firewall_policy_rule_collection/
+│   ├── nic/
+│   ├── nsg/
+│   ├── nsg_association/
+│   ├── public_ip/
+│   ├── resource_group/
+│   ├── route_table/
+│   ├── route_table_association/
+│   ├── subnet/
+│   ├── virtual_machine/
+│   ├── virtual_network/
+│   └── vnet_peering/
+│
+├── .gitignore
+└── README.md
+```
+---
+## Prerequisites
+
+Before deploying the infrastructure, ensure the following tools and access are available:
+
+- Terraform installed
+- Azure CLI installed
+- An active Azure subscription
+- Required permissions to create networking and compute resources in Azure
+- Azure authentication configured using Azure CLI
+
+## Deployment Workflow
+
+Navigate to the development environment:
+
+```bash
+cd environments/dev
+
+```
+Initialize the Terraform working directory and download the required providers:
+
+```bash
+terraform init
+```
+
+Format and validate the Terraform configuration:
+
+```bash
+terraform fmt -recursive
+terraform validate
+```
+
+Review the execution plan before creating any resources:
+
+```bash
+terraform plan
+```
+
+Deploy the infrastructure:
+
+```bash
+terraform apply
+```
+
+After completing the validation and testing, destroy the infrastructure to avoid unnecessary Azure costs:
+
+```bash
+terraform destroy
+```
