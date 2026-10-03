@@ -323,7 +323,7 @@ firewall_policy = {
   hub_policy = {
     name    = "afwp-axion-hub-dev-cin"
     rg_name = "rg-axion-network-dev-cin"
-    sku = "Basic"
+    sku     = "Basic"
   }
 }
 rule_collection = {

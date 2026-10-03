@@ -7,11 +7,11 @@ terraform {
     }
   }
   backend "azurerm" {
-    resource_group_name = "mono-dev-shared-rg"
+    resource_group_name  = "mono-dev-shared-rg"
     storage_account_name = "strmono"
-    container_name = "statefile"
-    key = "hub-spoke/dev.statefile"
-    
+    container_name       = "statefile"
+    key                  = "hub-spoke/dev.statefile"
+
   }
 }
 provider "azurerm" {
