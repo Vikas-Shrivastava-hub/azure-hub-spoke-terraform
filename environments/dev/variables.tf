@@ -86,31 +86,7 @@ variable "firewall" {
     zones = optional(list(string))
   }))
 }
-variable "manage_subnet_id" {
-  type    = string
-  default = null
 
-}
-variable "manage_public_ip_id" {
-  type    = string
-  default = null
-
-}
-variable "ip_subnet_id" {
-  type    = string
-  default = null
-
-}
-variable "ip_public_ip_address_id" {
-  type    = string
-  default = null
-
-}
-variable "firewall_policy_id" {
-  type    = string
-  default = null
-
-}
 
 
 variable "pip" {
@@ -199,10 +175,6 @@ variable "udr" {
     })))
     bgp_route_propagation_enabled = optional(bool)
   }))
-}
-variable "next_hop_in_ip_address" {
-  type    = string
-  default = null
 }
 variable "vm" {
   type = map(object({
